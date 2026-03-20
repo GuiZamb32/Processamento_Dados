@@ -1,0 +1,102 @@
+CAPACIDADES
+1. Realizar pré-processamento de dados, incluindo limpeza e normalização.
+2. Implementar processos de ETL para alimentar os dashboards.
+3. Configurar a integração de APIs para atualização automática de dados.
+4. Integrar APIs para enriquecer as visualizações de dados.
+5. Aplicar técnicas de otimização para o desempenho do sistema.
+
+
+CONTEXTUALIZAÇÃO
+A cesta básica é composta por um conjunto de alimentos considerados essenciais para a alimentação
+do brasileiro. Com a composição regulamentada por lei, o preço da cesta básica é frequentemente
+utilizado como métrica de prosperidade, dominando a análise do custo de vida no país.
+Como parte fundamental do orçamento brasileiro, os itens da cesta básica compõem parte significativa
+do índice de preços ao consumidor amplo(IPCA), medida governamental utilizada para compor
+indicadores de inflação. A variação desse índice é registrada em uma série histórica do banco central,
+disponível para consulta online via API de dados abertos.
+Obtendo a série histórica do IPCA, e uma precificação atualizada dos itens da cesta básica, podemos
+simular as condições de precificação desses itens no passado. Esse processo é similar ao cálculo do
+Preço Real Corrigido, onde calculamos quanto um item deveria custar baseado apenas na inflação.
+
+
+DESAFIO
+Construa uma base de dados e um pipeline de scripts python para extrair e armazenar os dados
+necessários para a análise e processamento dos dados do IPCA e dos produtos que compõem a cesta
+básica. Este pipeline deve buscar a série histórica do IPCA na API do Banco Central e utilizar Web
+Scraping para obter a informação dos produtos da cesta básica de um mercado de Florianópolis.
+Utilizando os dados obtidos, extraia relatórios mostrando:
+
+1. O valor e a composição da cesta básica de menor valor no mercado escolhido, nos dias atuais;
+    a. Dica: liste, para cada componente da cesta básica, o nome e marca do produto; o preço
+    unitário; o número de unidades para atingir o quantitativo pedido; outras informações
+    que considerar relevante;.
+
+2. O valor e a composição da cesta básica de maior valor no mercado escolhido, nos dias atuais;
+
+3. O valor estimado para as cestas montadas nos anos anteriores, calculado com base no IPCA
+anual acumulado.
+    a. Dica 1: você precisará calcular o índice acumulado. Lembre-se que o índice IPCA é em
+    relação ao mês anterior, portanto, usa a lógica do juros sobre juros.
+    b. Dica 2: estamos usando como base o preço atual dos produtos. Portanto a estimativa
+    do valor em anos anteriores deve usar a métrica de deflação.
+
+
+
+Para este desafio, considerem uma cesta básica montada com os itens abaixo:
+    
+    1. Arroz (branco, integral ou parboilizado): 5kg;
+    2. Feijão: 2kg;
+    3. Óleo de soja: 900ml;
+    4. Açúcar: 1kg;
+    5. Café: 500g;
+    
+    
+Como bônus, gere um complemento incluindo os itens abaixo. Nos relatórios, o complemento deve ser
+mostrado como um campo adicional (mostre o valor da cesta básica e da cesta + complemento)
+    1. Macarrão: 1kg;
+    2. Farinha de milho ou mandioca: 500g;
+    3. Sal: 1kg;
+
+
+=======================================================================================
+=============================================================================================================
+
+
+    
+RESULTADOS E ENTREGAS
+As entregas devem ser compostas pelos seguintes artefatos:
+30 minutos) Script python para a criação do schema de banco utilizando sqlite.
+Recomendação: utilize a biblioteca sql-alchemy descrita no material disponibilizado para leitura
+no AVA Aula 05 - Interação com Banco de Dados via Python.
+
+
+
+(30 minutos) Scripts python para consultar a API do banco central, consolidar os valores de
+inflação e armazená-los no banco de dados criado. Utilizem como referência o material da aula
+sobre APIs, disponível no AVA. Link da API do BC.
+
+
+(1 hora) Scripts python para extrair as informações dos produtos componentes da cesta básica
+via webscrapping. Recomendação: usem o exercício de extração dos preços de arroz do site
+do Giassi, iniciado na aula sobre Web Scraping. O AVA contém ainda vídeos com dicas para
+este projeto.
+
+    Obrigatório: utilize o template de código incluído no anexo A documento para gerar um
+    crawler. As opções de cache deste template devem ser utilizadas durante o
+    desenvolvimento.
+
+    
+(1 hora) Scripts python com o processamento dos dados usando numpy, pandas ou sql :
+    o Dentre os produtos buscados, gere a composição da cesta básica com o menor valor
+    possível. Faça o mesmo para a cesta básica com o maior valor;
+    o Calcule o valor acumulado do IPCA nos anos da série histórica. Estime o valor das
+    cestas criadas
+
+
+(1 hora) Relatórios extraídos do banco, acompanhados da consulta SQL utilizada para extração:
+    o Composição da cesta básica de menor valor: produto, marca, preço do item;
+    o Composição da cesta básica de maior valor: produto, marca, preço do item;
+    o Estimativa do custo anual da cesta básica, de acordo com o índice IPCA do ano.
+Todos os scripts devem estar organizados em um único projeto, utilizando nomenclaturas coerentes e
+evitando importações de bibliotecas e módulos desnecessários. Não é permitida a inclusão de
+bibliotecas de IA (scikit-learn, tensorflow, etc.) nesta atividade.
