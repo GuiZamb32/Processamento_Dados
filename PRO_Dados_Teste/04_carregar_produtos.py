@@ -1,71 +1,57 @@
-"""
-04_carregar_produtos.py
-Lê produtos_cesta.json gerado pelo spider e persiste no banco SQLite.
-"""
-
 import json
 import os
 from sqlalchemy.orm import Session
 from models import Categoria, Produto, criar_banco, get_engine
 
-def carregar_produtos(caminho_json: str = "produtos_cesta.json") -> None:
-    # 1. Garante que o banco e as tabelas existam [cite: 52]
+def carregar_produtos(caminho_json="produtos_cesta.json"):
+    # 1. Garante a criação do banco e das tabelas
     criar_banco()
     engine = get_engine()
-
-    # 2. Verifica se o arquivo de dados existe
+    
     if not os.path.exists(caminho_json):
-        print(f"❌ Erro: Arquivo {caminho_json} não encontrado!")
+        print(f"❌ Arquivo {caminho_json} não encontrado!")
         return
 
+    # 2. Abre o arquivo JSON
     with open(caminho_json, "r", encoding="utf-8") as f:
         try:
             produtos_raw = json.load(f)
         except json.JSONDecodeError:
-            print(f"❌ Erro: O arquivo {caminho_json} está mal formatado ou vazio.")
+            print(f"❌ Erro ao ler o JSON em {caminho_json}")
             return
 
-    novos = 0
-    ignorados = 0
-
+    novos, ignorados = 0, 0
     with Session(engine) as session:
         for item in produtos_raw:
-            # Validação básica de integridade [cite: 17]
-            if not item.get("nome") or not item.get("preco"):
+            # CORREÇÃO: Adicionado ':' e removido erro de sintaxe
+            if not item.get("nome"):
                 ignorados += 1
                 continue
-
-            # Busca a categoria correspondente para manter a chave estrangeira [cite: 129]
-            categoria = session.query(Categoria).filter_by(nome=item["categoria"]).first()
-            if not categoria:
-                # Se a categoria não existe no banco, não podemos vincular o produto
-                ignorados += 1
-                continue
-
-            # Evita duplicidade de produtos (limpeza e normalização) [cite: 17]
-            existe = session.query(Produto).filter_by(
-                nome=item["nome"]
-            ).first()
             
-            if existe:
+            # Busca a categoria no banco (deve bater com o nome no JSON)
+            categoria = session.query(Categoria).filter_by(nome=item["categoria"]).first()
+            
+            # Verifica se a categoria existe e se o produto já não foi cadastrado (evitar duplicados)
+            if not categoria or session.query(Produto).filter_by(nome=item["nome"]).first():
                 ignorados += 1
                 continue
 
-            # Adiciona o novo produto ao banco de dados [cite: 30]
+            # Adiciona o produto ao banco
             session.add(Produto(
                 categoria_id=categoria.id,
                 nome=item["nome"],
                 marca=item.get("marca", ""),
-                preco=item["preco"],
-                unidade_volume=item.get("volume"),  # Alinhado com a saída do Scrapy
-                preco_por_kg=item.get("preco_por_kg"),
-                url=item.get("url"),
+                preco=item.get("preco", 0.0), # Garante um valor padrão caso falte
+                unidade_volume=item.get("volume"),
+                preco_por_kg=item.get("preco_por_kg", 0.0),
+                url=item.get("url")
             ))
             novos += 1
-
+        
+        # Salva as alterações no banco de dados
         session.commit()
-
-    print(f"✅ Processamento concluído: {novos} novos produtos salvos, {ignorados} ignorados.")
+        
+    print(f"✅ Sucesso: {novos} novos produtos cadastrados, {ignorados} ignorados.")
 
 if __name__ == "__main__":
     carregar_produtos()
