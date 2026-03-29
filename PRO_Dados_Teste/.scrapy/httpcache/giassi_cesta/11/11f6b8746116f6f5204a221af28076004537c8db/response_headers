@@ -1,0 +1,25 @@
+Content-Type: text/xml
+Date: Sun, 29 Mar 2026 00:42:57 GMT
+X-Vtex-Cache-Backend-Connect-Time: 0.002
+X-Vtex-Cache-Backend-Header-Time: 0.151
+Server: nginx
+Cache-Control: public, max-age=613, stale-while-revalidate=10, stale-if-error=600
+Content-Encoding: gzip
+X-Vtex-Janus-Router-Backend-App: io-production-vstore-group-1-1a-cl4
+X-Router-Cache: MISS
+X-Vtex-Etag-Control: public, max-age=300
+X-Request-Id: 8cd176161e91460b91b5c81f78a6d6c5
+X-Vtex-Router-Version: 9.17.22
+X-Vtex-Router-Elapsed-Time: 00:00:00.1458230
+X-Vtex-Backend-Elapsed-Time: 00:00:00.1437253
+X-Vtex-Io-Cluster-Id: prod-dj-iostore-eks-use1a-cl4
+X-Vtex-Cache-Status: MISS
+X-Powered-By-Vtex-Cache: 2.6.1
+X-Vtex-Cache-Server: ip-10-203-62-49.ec2.internal
+X-Vtex-Cache-Time: 0.151
+Vary: Accept-Encoding
+X-Cache: Hit from cloudfront
+Via: 1.1 88f44b1118504bfe15f8deb57249e780.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: GRU3-P13
+X-Amz-Cf-Id: r5Kk21EoZMBa9Hg9Z_fyhMF149Gr7TD-vRy5wFrO9W7fIg3gb-zFUQ==
+Age: 245

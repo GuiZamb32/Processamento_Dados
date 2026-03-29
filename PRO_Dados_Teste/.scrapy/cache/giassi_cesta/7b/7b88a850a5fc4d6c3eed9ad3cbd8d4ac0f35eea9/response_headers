@@ -1,0 +1,21 @@
+Content-Type: text/html; charset=utf-8
+Date: Sun, 29 Mar 2026 00:54:48 GMT
+X-Vtex-Cache-Status: MISS
+X-Vtex-Cache-Server: ip-10-203-81-12.ec2.internal
+Server: nginx
+Cache-Control: no-store, no-cache
+Content-Encoding: gzip
+Etag: "CD9BBCE1DD1ABFA7296CD000BC05E0C9"
+X-Vtex-Janus-Router-Backend-App: io-production-vstore-group-1-1c-r3n
+X-Router-Cache: MISS
+X-Vtex-Io-Cluster-Id: prod-dj-iostore-eks-use1c-r3n
+X-Frame-Options: SAMEORIGIN
+X-Vtex-Router-Elapsed-Time: 00:00:00.2832117
+X-Request-Id: c76c3f96c97641a1b0f74b2106bec98b
+X-Vtex-Router-Version: 9.17.22
+X-Vtex-Backend-Elapsed-Time: 00:00:00.2808106
+Vary: accept-encoding
+X-Cache: Error from cloudfront
+Via: 1.1 6a1b13d3cb3e174cb0810a7708e09c36.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: GRU3-P13
+X-Amz-Cf-Id: nmnGbrx2rlRFDED8ZulUzrbA9mdhtfF2ge3wkv0CzB7ohkPw5Xqy9g==
