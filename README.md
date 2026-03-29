@@ -1,136 +1,150 @@
-# Cesta Básica — Pipeline de Dados
-**Avaliação Prática · BI e Data Visualization · UniSENAI SC**
+#  Pipeline de Dados — Cesta Básica
 
-## Visão Geral
+**Avaliação Prática · BI e Data Visualization · UniSENAI SC 2025/1**
 
-Este projeto implementa um pipeline completo de dados para análise do custo de uma cesta básica, integrando:
-
-- Coleta de dados econômicos (IPCA) via API pública
-- Web scraping de produtos de supermercado
-- Persistência em banco de dados relacional
-- Processamento e geração de relatórios analíticos
-
-O objetivo é simular um fluxo real de engenharia de dados, desde a ingestão até a análise.
+Pipeline completo de engenharia de dados para análise do custo da cesta básica em Florianópolis, integrando coleta de dados econômicos via API pública, web scraping de supermercado, persistência em banco relacional e geração de relatórios analíticos.
 
 ---
 
-## Arquitetura do Projeto
+## Estrutura do Projeto
 
 ```
-cesta_basica/
-├── scripts/
-│   ├── 01_criar_banco.py
-│   ├── 02_coletar_ipca.py
-│   ├── 03_scraping_giassi.py
-│   ├── 04_carregar_produtos.py
-│   └── 05_relatorios.py
-├── models.py
-├── relatorios/
-├── cache/
-├── requirements.txt
-└── README.md
+PRO_Dados_Teste/
+├── models.py                  # Modelos SQLAlchemy (tabelas + função de criação do banco)
+├── 01_criar_banco.py          # Cria o schema SQLite e popula as categorias
+├── 02_coletar_ipca.py         # Consulta API do Banco Central e salva série histórica
+├── 03_scraper_giassi.py       # Spider Scrapy — coleta produtos do Giassi
+├── 04_carregar_produtos.py    # ETL: carrega produtos_cesta.json no banco
+├── 05_gerar_relatorios.py     # Gera os 5 relatórios analíticos
+├── cesta_basica.db            # Banco SQLite gerado pelo pipeline
+├── produtos_cesta.json        # Saída bruta do scraper
+├── cache/                     # Cache HTTP do Scrapy (24h)
+└── scrapy-giassi.log          # Log de execução do scraper
 ```
 
 ---
 
-## Tecnologias Utilizadas
+## Tecnologias
 
-- Python 3.x
-- SQLite
-- SQLAlchemy
-- Scrapy
-- Requests
+| Biblioteca     | Uso                                      |
+|----------------|------------------------------------------|
+| `sqlalchemy`   | ORM e interação com o banco SQLite       |
+| `scrapy`       | Web scraping do site do Giassi           |
+| `pandas`       | Processamento e leitura das queries SQL  |
+| `requests`     | Consumo da API do Banco Central          |
 
 ---
 
-## Pipeline de Execução
+## Instalação
 
-### 1. Criação do banco de dados
-
-```bash
-python scripts/01_criar_banco.py
+```powershell
+py -m pip install scrapy sqlalchemy pandas requests w3lib
 ```
 
 ---
 
-### 2. Coleta de dados do IPCA
+## Execução do Pipeline
 
-```bash
-python scripts/02_coletar_ipca.py
+Execute os scripts na ordem abaixo a partir da pasta do projeto.
+
+### 1. Criar o banco de dados
+Cria as tabelas `ipca`, `categoria` e `produto` no SQLite e insere as 8 categorias da cesta.
+
+```powershell
+py 01_criar_banco.py
+```
+
+### 2. Coletar série histórica do IPCA
+Consulta a API de dados abertos do Banco Central (SGS 433) de 2015 a 2024 e persiste os 120 registros mensais.
+
+```powershell
+py 02_coletar_ipca.py
+```
+
+### 3. Coletar preços do Giassi (Web Scraping)
+Percorre o sitemap do Giassi, filtra apenas produtos das categorias da cesta e salva em `produtos_cesta.json`. Usa cache HTTP de 24h para não sobrecarregar o site.
+
+```powershell
+py -m scrapy runspider .\03_scraper_giassi.py
+```
+
+> ⚠️ A primeira execução pode levar vários minutos. As seguintes são instantâneas graças ao cache.
+
+### 4. Carregar produtos no banco
+Lê o `produtos_cesta.json` e insere os produtos no banco, vinculando cada um à sua categoria.
+
+```powershell
+py 04_carregar_produtos.py
+```
+
+### 5. Gerar relatórios
+Processa os dados e exibe os 5 relatórios no terminal.
+
+```powershell
+py 05_gerar_relatorios.py
 ```
 
 ---
 
-### 3. Web Scraping de produtos
+## Relatórios Gerados
 
-```bash
-scrapy runspider scripts/03_scraping_giassi.py -o relatorios/produtos_raw.json
-```
+| # | Relatório |
+|---|-----------|
+| 1 | Composição da cesta básica de **menor valor** (5 itens) |
+| 2 | Cesta de menor valor **com complemento** (8 itens) |
+| 3 | Composição da cesta básica de **maior valor** (5 itens) |
+| 4 | Cesta de maior valor **com complemento** (8 itens) |
+| 5 | Progressão histórica estimada por **deflação IPCA** (2016–2024) |
 
----
-
-### 4. Carga de dados no banco
-
-```bash
-python scripts/04_carregar_produtos.py
-```
-
----
-
-### 5. Geração de relatórios
-
-```bash
-python scripts/05_relatorios.py
-```
+Cada relatório de cesta exibe: categoria, nome do produto, preço unitário, volume/embalagem e custo total por item. Os totais são apresentados separando cesta básica e complemento.
 
 ---
 
 ## Modelagem de Dados
 
-### Tabela: ipca
+```
+ipca
+├── id          INTEGER  PK
+├── data        DATE     UNIQUE   ← primeiro dia do mês de referência
+└── valor       FLOAT             ← variação % mensal
 
-- id (INTEGER)
-- data (DATE)
-- valor (FLOAT)
+categoria
+├── id                    INTEGER  PK
+├── nome                  TEXT     UNIQUE
+├── quantidade_necessaria FLOAT             ← ex: 5 (para 5kg de arroz)
+├── unidade               TEXT              ← "kg" ou "L"
+└── complemento           INTEGER           ← 0 = cesta básica | 1 = complemento
 
-### Tabela: categoria
-
-- id (INTEGER)
-- nome (TEXT)
-- quantidade_cesta (FLOAT)
-- unidade_cesta (TEXT)
-- bonus (INTEGER)
-
-### Tabela: produto
-
-- id (INTEGER)
-- categoria_id (INTEGER)
-- nome (TEXT)
-- marca (TEXT)
-- preco (FLOAT)
-- preco_kg (FLOAT)
-- quantidade (FLOAT)
-- unidade (TEXT)
-- url (TEXT)
-- data_coleta (DATE)
+produto
+├── id             INTEGER  PK
+├── categoria_id   INTEGER  FK → categoria
+├── nome           TEXT
+├── marca          TEXT
+├── preco          FLOAT
+├── unidade_volume TEXT              ← ex: "1.0kg", "0.9L"
+├── preco_por_kg   FLOAT             ← preço normalizado para comparação
+└── url            TEXT
+```
 
 ---
 
-## Lógica de Deflação
+## Lógica de Deflação Histórica
 
-valor_passado = valor_atual / fator_acumulado_ipca
+Com base nos preços atuais coletados no Giassi, o Relatório 5 estima quanto a cesta teria custado em anos anteriores usando deflação:
+
+```
+valor_ano_passado = valor_atual ÷ ∏(1 + IPCA_ano / 100)
+```
+
+O IPCA acumulado anual é calculado pelo produto dos fatores mensais (juros compostos):
+
+```
+ipca_acumulado_ano = ∏(1 + taxa_mensal / 100) − 1
+```
 
 ---
 
-## Melhorias Futuras
+## Fontes de Dados
 
-- Docker
-- Airflow
-- PostgreSQL
-- Dashboard (Power BI / Streamlit)
-
----
-
-## Objetivo
-
-Projeto acadêmico focado em engenharia de dados, integração de APIs, scraping e análise de dados.
+- **IPCA**: [API de Dados Abertos — Banco Central do Brasil (SGS 433)](https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json)
+- **Preços**: [Giassi Supermercados — Florianópolis/SC](https://www.giassi.com.br)
