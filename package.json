@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "pandas": "^0.0.3",
+    "requests": "^0.3.0",
+    "scrapy": "^0.0.1",
+    "sqlalchemy": "^10.1.1",
+    "w3lib": "^0.0.2"
+  }
+}
