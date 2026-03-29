@@ -41,12 +41,16 @@ def criar_banco():
     with Session(engine) as session:
         if session.query(Categoria).count() > 0: return
         session.add_all([
-            Categoria(nome="Arroz", quantidade_necessaria=5, unidade="kg", complemento=0),
-            Categoria(nome="Feijão", quantidade_necessaria=2, unidade="kg", complemento=0),
-            Categoria(nome="Óleo de Soja", quantidade_necessaria=0.9, unidade="L", complemento=0),
-            Categoria(nome="Açúcar", quantidade_necessaria=1, unidade="kg", complemento=0),
-            Categoria(nome="Café", quantidade_necessaria=0.5, unidade="kg", complemento=0),
-            Categoria(nome="Macarrão", quantidade_necessaria=1, unidade="kg", complemento=1),
-            Categoria(nome="Sal", quantidade_necessaria=1, unidade="kg", complemento=1)
+            # Cesta básica
+            Categoria(nome="Arroz",        quantidade_necessaria=5,   unidade="kg", complemento=0),
+            Categoria(nome="Feijão",        quantidade_necessaria=2,   unidade="kg", complemento=0),
+            Categoria(nome="Óleo de Soja", quantidade_necessaria=0.9, unidade="L",  complemento=0),
+            Categoria(nome="Açúcar",       quantidade_necessaria=1,   unidade="kg", complemento=0),
+            Categoria(nome="Café",         quantidade_necessaria=0.5, unidade="kg", complemento=0),
+            # Complemento
+            Categoria(nome="Macarrão",     quantidade_necessaria=1,   unidade="kg", complemento=1),
+            Categoria(nome="Farinha",      quantidade_necessaria=0.5, unidade="kg", complemento=1),  # CORRIGIDO: estava faltando
+            Categoria(nome="Sal",          quantidade_necessaria=1,   unidade="kg", complemento=1),
         ])
         session.commit()
+        print("✅ Banco criado com 8 categorias.")

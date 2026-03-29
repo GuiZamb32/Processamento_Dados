@@ -256,6 +256,14 @@ def main():
         print(f"\n  * Ano base ({ano_base}): preços atuais coletados no Giassi")
         print(f"  * Deflação aplicada: valor_ano = valor_{ano_base} ÷ ∏(1 + IPCA_ano/100)\n")
 
+    # ── SQLs utilizadas ───────────────────────────────────────
+    titulo("CONSULTAS SQL UTILIZADAS NOS RELATÓRIOS")
+    print("\n[ Cesta Menor — Relatórios 1 e 2 ]\n" + SQL_CESTA_MENOR)
+    print("\n[ Cesta Maior — Relatórios 3 e 4 ]\n" + SQL_CESTA_MAIOR)
+    print("\n[ Complemento Menor ]\n" + SQL_COMPLEMENTO_MENOR)
+    print("\n[ Complemento Maior ]\n" + SQL_COMPLEMENTO_MAIOR)
+    print("\n[ Série Histórica IPCA ]\n" + SQL_IPCA)
+
 
 
 
